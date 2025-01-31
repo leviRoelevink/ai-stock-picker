@@ -1,2 +1,3 @@
 ✔ Use the OpenAI API to generate a report advising on whether to buy or sell the shares based on the fetched stock data @started(25-01-31 10:05) @done(25-01-31 10:27) @lasted(22m44s)
 ✔ Add a 'temperature' property and run some experiments with setting it to different levels @started(25-01-31 11:01) @done(25-01-31 11:29) @lasted(28m15s)
+☐ Create a finely tuned model @started(25-01-31 12:30)
