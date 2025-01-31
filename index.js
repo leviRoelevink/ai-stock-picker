@@ -2,31 +2,18 @@ import 'dotenv/config';
 import OpenAI from 'openai';
 import { getFromToDates } from './utils/dates.js';
 
-/** 
- * Challenge:
- * 1. Use the OpenAI API to generate a report advising 
- * on whether to buy or sell the shares based on the data 
- * that comes in as a parameter.
- * 
- * 🎁 See hint.md for help!
- * 
- * 🏆 Bonus points: use a try catch to handle errors.
- * **/
-
 const BASE_URL = 'https://api.polygon.io/v2/aggs/ticker/';
-
-function requestURL(ticker, startDate, timespan) {
-    const [from, to] = getFromToDates(startDate, timespan);
-    return `${BASE_URL}${ticker}/range/${timespan}/day/${from}/${to}`;
-}
-
+const tickers = ['AAPL', 'NVDA', 'AMZN'];
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-const tickers = ['AAPL', 'NVDA', 'AMZN'];
+function getRequestURL(ticker, endDate, timespan) {
+    const [from, to] = getFromToDates(endDate, timespan);
+    return `${BASE_URL}${ticker}/range/${timespan}/day/${from}/${to}`;
+}
 
-async function requestStockData(url) {
+async function fetchStockData(url) {
     const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -37,45 +24,63 @@ async function requestStockData(url) {
     if (!response.ok) {
         console.error(`Failed to fetch stock data: ${response.status} ${response.statusText}`);
         throw new Error(`Failed to fetch stock data: ${response.status} ${response.statusText}`);
-    } 
+    }
 
     return response.text();
 }
 
-async function fetchStocksData(tickers, startDate, timespan) {
+async function fetchStocksData(tickers, endDate, timespan) {
     try {
         const stocksData = await Promise.all(tickers.map(async (ticker) => {
-            const url = requestURL(ticker, startDate, timespan); // TODO: DRY getFromToDates function is being executed for each ticker 
-            console.log(`url of ${ticker}: ${url}`);
-            return await requestStockData(url);
+            const url = getRequestURL(ticker, endDate, timespan); // TODO: DRY getFromToDates function is being executed for each ticker 
+            return await fetchStockData(url);
         }));
 
         return stocksData;
     } catch (error) {
         console.error('error fetching stocks data:', error);
-        // TODO: display error to user
+        throw new Error(`Error fetching stocks data: ${error}`);
     }
 }
 
-const stocksData = await fetchStocksData(tickers, new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), 3);
-console.log(stocksData);
+try {
+    const stocksData = await fetchStocksData(tickers, new Date(), 3);
+    const userContent = `
+    ###
+    Ayo wagone, I am sir Big Smart Stock Broker here to give ya some advice to make bank.
+    <your report>
+    Good luck brother, may the force be with you!
+    ###
 
-// const stockData = await requestStockData(tickers[0], new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), 3);
+    ###
+    Whats good my brother, I am like Leonardo DiCaprio in the Wolf of Wallstreet. Great movie, you ever seen it? Anyway, I got some advice for you to make stonksss!
+    <your report>
+    Go all in dude this is a for sure thang!!
+    ###
 
+    ${stocksData.join('')}`;
+    const report = await generateReport(userContent);
+    console.log(report) || 'No response received from GPT';
+} catch (error) {
+    console.error(`Error generating report / joining stock data: ${error}`);
+}
 
-// const response = await openai.chat.completions.create({
-//     model: 'gpt-4o-mini',
-//     messages:
-//         [
-//             {
-//                 role: 'system',
-//                 content: 'You will be asked to explain specific physics topics to different kinds of audiences. Answer as if you were an expert physicist. Always give answers appropriate for the kind of audience that asked you the question.',
-//             },
-//             {
-//                 role: 'user',
-//                 content: 'stock data',
-//             },
-//         ],
-// });
+async function generateReport(data) {
+    const report = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages:
+            [
+                {
+                    role: 'system',
+                    content: 'You will be asked to generate a report on wether to buy or sell shares of certain stocks based on data about those stocks from the past 3 days. Answer as if you were an experienced stock broker. Your answer should be limited to 150 words. Use examples provided between ### to set the style and tone of your response.',
+                },
+                {
+                    role: 'user',
+                    content: data,
+                },
+            ],
+        temperature: 1.1
+    });
 
-// console.log(response.choices[0].message.content);
+    return report.choices[0].message.content;
+}

@@ -2,14 +2,14 @@ function formatDate(date) {
     return date.toISOString().split('T')[0];
 }
 
-function dateNDaysLater(date, n) {
-    return new Date(date.setDate(date.getDate() + n));
+function dateNDaysBefore(date, n) {
+    return new Date(date.setDate(date.getDate() - n));
 }
 
-export function getFromToDates(startDate, timespan) {
-    const date = new Date(startDate);
-    const formattedStartDate = formatDate(date);
-    const endDate = dateNDaysLater(date, timespan);
-    const formattedEndDate = formatDate(endDate);
+export function getFromToDates(endDate, timespan) {
+    const date = new Date(endDate);
+    const formattedEndDate = formatDate(date);
+    const startDate = dateNDaysBefore(date, timespan);
+    const formattedStartDate = formatDate(startDate);
     return [formattedStartDate, formattedEndDate];
 }
