@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { generateReport, fetchStocksData } from '@/app/lib/actions';
 
 function TickerInput({ tickers, onTickerChange }) {
   const [ticker, setTicker] = useState('');
@@ -41,21 +42,36 @@ function TickerList({ tickers }) {
   );
 }
 
-function GenerateReportButton() {
+function GenerateReportButton({ tickers, onReportGenerated }) {
+  async function handleClick() {
+    try {
+      const stocksData = await fetchStocksData(tickers, new Date(), 3);
+      const report = await generateReport(stocksData);
+      onReportGenerated(report);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
-    <button>Generate Report</button>
+    <button onClick={handleClick}>Generate Report</button>
   );
 }
 
 function TickerPickerTable() {
   const [tickers, setTickers] = useState([]);
+  const [report, setReport] = useState('');
 
   return (
-    <>
-      <TickerInput tickers={tickers} onTickerChange={setTickers} />
-      <TickerList tickers={tickers} />
-      <GenerateReportButton tickers={tickers} />
-    </>
+    report !== '' ? (
+      <>{report}</>
+    ) : (
+      <>
+        <TickerInput tickers={tickers} onTickerChange={setTickers} />
+        <TickerList tickers={tickers} />
+        <GenerateReportButton tickers={tickers} onReportGenerated={setReport} />
+      </>
+    )
   );
 }
 
