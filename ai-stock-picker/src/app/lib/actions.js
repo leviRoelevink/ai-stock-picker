@@ -50,6 +50,7 @@ export async function generateReport(stocksData) {
     const data = `${userContent}\n${stocksData}`;
     console.log(data);
 
+    
     const messages = [
         {
             role: 'system',
@@ -62,7 +63,7 @@ export async function generateReport(stocksData) {
             content: data,
         },
     ];
-
+    
     try {
         const response = await openai.chat.completions.create({
             model: 'gpt-4o-mini',

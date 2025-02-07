@@ -43,6 +43,8 @@ function TickerList({ tickers }) {
 }
 
 function GenerateReportButton({ tickers, onReportGenerated }) {
+  const [errorMessage, setErrorMessage] = useState('');
+
   async function handleClick() {
     try {
       const stocksData = await fetchStocksData(tickers, new Date(), 3);
@@ -50,11 +52,15 @@ function GenerateReportButton({ tickers, onReportGenerated }) {
       onReportGenerated(report);
     } catch (error) {
       console.error(error);
+      setErrorMessage(error.message);
     }
   }
 
   return (
-    <button onClick={handleClick}>Generate Report</button>
+    <div>
+      <button onClick={handleClick}>Generate Report</button>
+      {errorMessage !== '' && <p className="text-red-500">{errorMessage}</p>}
+    </div>
   );
 }
 
