@@ -8,8 +8,7 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-function getRequestURL(ticker, endDate, timespan) {
-    const [from, to] = getFromToDates(endDate, timespan);
+function getRequestURL(ticker, from, to, timespan) {
     return `${BASE_URL}${ticker}/range/${timespan}/day/${from}/${to}`;
 }
 
@@ -30,9 +29,11 @@ async function fetchStockData(url) {
 }
 
 export async function fetchStocksData(tickers, endDate, timespan) {
+    const [from, to] = getFromToDates(endDate, timespan);
+
     try {
         const response = await Promise.all(tickers.map(async (ticker) => {
-            const url = getRequestURL(ticker, endDate, timespan); // TODO: DRY getFromToDates function is being executed for each ticker 
+            const url = getRequestURL(ticker, from, to, timespan);
             return await fetchStockData(url);
         }));
 
