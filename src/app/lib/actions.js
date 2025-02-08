@@ -14,7 +14,6 @@ function getRequestURL(ticker, endDate, timespan) {
 }
 
 async function fetchStockData(url) {
-    console.log('API KEY: ', process.env.POLYGON_API_KEY);
     const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -48,8 +47,6 @@ export async function fetchStocksData(tickers, endDate, timespan) {
 
 export async function generateReport(stocksData) {
     const data = `${userContent}\n${stocksData}`;
-    console.log(data);
-
 
     const messages = [
         {
