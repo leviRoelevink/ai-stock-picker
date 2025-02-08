@@ -1,36 +1,26 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+## AI Stock Picker
+Users can select up to 3 stock tickers (symbols like AAPL or GOOGL). The system then fetches 3 days of historical performance data from Polygon API and formats this data. The data is then sent to OpenAI's API for analysis and an investment report is generated. The report describes the stocks' performance and recommends whether to buy, hold or sell. Reports are generated in a peculiar style because of the few shot approach, providing the model with examples to set the style and tone of it's response.
+
 ## Getting Started
+The project does not contain environment variables by default, so you'll have to set them yourself for the app to work.
 
-First, run the development server:
+Create a `.env.local` file in the root directory of your project with the following content:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```env
+POLYGON_API_KEY=your_polygon_api_key_here
+OPENAI_API_KEY=your_openai_api_key_here
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Make sure to replace `your_polygon_api_key_here` and `your_openai_api_key_here` with your actual API keys.
+An API key for Polygon can be obtained [here](https://polygon.io/dashboard) and an OpenAI API key [here](https://platform.openai.com/settings/organization/api-keys).
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+Run 'pnpm install' to install dependencies
+Run 'pnpm install openai' to install the openai library
+Run 'pnpm next build' to build the app.
+Run 'pnpm next start' to start the app.
+Open your browser and navigate to http://localhost:3000
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Example of generated report
+Hold onto your hats! Over the past three days, NVIDIA (NVDA) has spiced things up, jumping from $121.76 to a dazzling close of $129.84. This stock is sizzling, folks! If you've got shares, it’s time to ride this bullish wave. Don't even think about selling – this rocket’s just getting off the launch pad! On the other hand, Alphabet (GOOG) has taken a bit of a nosedive, from $193.10 to $187.14. This tech titan is feeling the pinch, and it’s a bumpy ride ahead! But fear not, it could rebound. Hunker down if you've got it, but maybe keep an eye for that sweet exit. So, for NVDA, charge in and buy more, while for GOOG, it’s a hold. Let’s see where the chips fall next! 🍀
