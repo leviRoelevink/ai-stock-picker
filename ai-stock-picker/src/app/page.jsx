@@ -14,7 +14,7 @@ function TickerInput({ tickers, onTickerChange }) {
       return;
     }
 
-    onTickerChange([...tickers, ticker]);
+    onTickerChange([...tickers, ticker]); // Update the state with the new ticker
     setTicker('');
   }
 
