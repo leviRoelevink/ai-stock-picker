@@ -102,8 +102,8 @@ function TickerPickerTable() {
 
 export default function Page() {
   return (
-    <main className="flex flex-col items-center justify-center h-screen w-full text-lg">
+    <div className="flex flex-col items-center justify-center h-full w-full text-lg">
       <TickerPickerTable />
-    </main>
+    </div>
   );
 }
