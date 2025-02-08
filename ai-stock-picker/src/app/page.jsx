@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { generateReport, fetchStocksData } from '@/app/lib/actions';
+import LoadingIcon from '@/app/ui/loading-icon';
 
 function TickerInput({ tickers, onTickerChange }) {
   const [ticker, setTicker] = useState('');
@@ -44,17 +45,21 @@ function TickerList({ tickers }) {
   );
 }
 
-function GenerateReportButton({ tickers, onReportGenerated }) {
+function GenerateReportButton({ tickers, onReportGenerated, onLoadingMessageChange }) {
   const [errorMessage, setErrorMessage] = useState('');
 
   async function handleClick() {
     try {
+      onLoadingMessageChange('Fetching stock data...');
       const stocksData = await fetchStocksData(tickers, new Date(), 3);
+      onLoadingMessageChange('Creating report...');
       const report = await generateReport(stocksData);
       onReportGenerated(report);
     } catch (error) {
       console.error(error);
       setErrorMessage(error.message);
+    } finally {
+      onLoadingMessageChange('');
     }
   }
 
@@ -69,15 +74,27 @@ function GenerateReportButton({ tickers, onReportGenerated }) {
 function TickerPickerTable() {
   const [tickers, setTickers] = useState([]);
   const [report, setReport] = useState('');
+  const [loadingMessage, setLoadingMessage] = useState('');
+
+  const handleReportGenerated = (newReport) => { 
+    setReport(newReport);
+    setTickers([]); // Reset tickers after report is generated
+  };
 
   return (
     report !== '' ? (
       <p className="text-center max-w-sm">{report}</p>
+    ) : loadingMessage !== '' ? (
+      <div className="flex flex-col items-center">
+        <LoadingIcon className="w-24 h-24"/>
+        <p className="text-center max-w-sm">{loadingMessage}</p>
+      </div>
     ) : (
       <div className="flex flex-col items-center">
         <TickerInput tickers={tickers} onTickerChange={setTickers} />
+
         <TickerList tickers={tickers} />
-        <GenerateReportButton tickers={tickers} onReportGenerated={setReport} />
+        <GenerateReportButton tickers={tickers} onReportGenerated={handleReportGenerated} onLoadingMessageChange={setLoadingMessage} />
       </div>
     )
   );

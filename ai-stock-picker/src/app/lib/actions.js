@@ -50,20 +50,22 @@ export async function generateReport(stocksData) {
     const data = `${userContent}\n${stocksData}`;
     console.log(data);
 
-    
+
     const messages = [
         {
             role: 'system',
             content: `You are a trading guru. 
             Given data on share prices over the past 3 days, write a report of no more than 150 words describing the stocks performance and recommending whether to buy, hold or sell.
-            Use examples provided between ### to set the style and tone of your response.`,
+            The advice for each stock should always be on a separate paragraph.
+            Use examples provided between ### to set the style and tone of your response.
+            `,
         },
         {
             role: 'user',
             content: data,
         },
     ];
-    
+
     try {
         const response = await openai.chat.completions.create({
             model: 'gpt-4o-mini',
